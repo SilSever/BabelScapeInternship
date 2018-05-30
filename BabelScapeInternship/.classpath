@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/babelscape-data-commons-1.0.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/commons-beanutils-1.7.0.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/commons-beanutils-core-1.7.0.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/commons-codec-1.8.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/commons-collections-3.2.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/commons-configuration-1.5.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/commons-digester-1.8.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/gson-2.8.2.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/guava-23.0.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/httpclient-4.3.6.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/httpcore-4.3.3.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/icu4j-56.1.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/jwi-2.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/lcl-jlt-2.4.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/logback-classic-1.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/logback-core-1.2.3.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/lucene-analyzers-common-7.2.0.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/lucene-core-7.2.0.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/lucene-queries-7.2.0.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/lucene-queryparser-7.2.0.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/lib/lucene-sandbox-7.2.0.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/babelnet-api-4.0.jar" sourcepath="/home/silvio/Documenti/Tirocinio/BabelNet-API-4.0/docs/javadoc.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/silvio/Documenti/Tirocinio/BabelNet-API-4.zip!/BabelNet-API-4.0/docs/javadoc"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/jgrapht-1.1.0/lib/jgrapht-demo-1.1.0.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/ejml-0.23.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/javax.json.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/javax.json-api-1.0-sources.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/joda-time.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/joda-time-2.9-sources.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/jollyday.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/jollyday-0.4.9-sources.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/protobuf.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/stanford-corenlp-3.9.1.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/stanford-corenlp-3.9.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/stanford-corenlp-3.9.1-models.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/stanford-corenlp-3.9.1-sources.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/xom.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/xom-1.2.10-src.jar"/>
+	<classpathentry kind="lib" path="/home/silvio/Documenti/Tirocinio/stanford-corenlp-full-2018-02-27/slf4j-api.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>

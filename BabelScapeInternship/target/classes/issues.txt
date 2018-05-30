@@ -1,0 +1,9 @@
+Finder:
+	Set instead of List ?
+	Is possible that at the second level of graph, some nodes are the root node ?
+	
+Bisogna levare nel graphBuilder i wikipedia's sources.
+Bisogna controllare meglio toFind di io (toLowerCase(),...). Con testing
+Aumentare prestazioni di build() di graphBuilder !!!
+Recuperare tutti i nodi di wordNet (~117k -> da ~bn:00117000n a bn:00000001n)
+					
