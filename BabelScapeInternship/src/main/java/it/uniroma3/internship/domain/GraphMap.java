@@ -7,7 +7,7 @@ import it.uniroma1.lcl.babelnet.BabelSynsetID;
 
 /**
  * 
- * @author silvio
+ * @author silvio severino
  *
  */
 public class GraphMap
