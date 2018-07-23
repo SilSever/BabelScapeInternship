@@ -11,6 +11,7 @@ import org.jgrapht.graph.SimpleGraph;
 
 import it.uniroma1.lcl.babelnet.BabelSynsetID;
 import it.uniroma3.internship.domain.BabelScore;
+import it.uniroma3.internship.domain.Node;
 import it.uniroma3.internship.ui.IO;
 
 /**
@@ -39,6 +40,9 @@ public class Controller
 		
 	}
 	
+	/**
+	 * Crea grafi ricorsivamente partendo da una stringa in input
+	 */
 	public void init()
 	{
 		String toFind = IO.getToFind();
@@ -61,11 +65,28 @@ public class Controller
 		//writer.Write2();
 	}
 
+	/**
+	 * Sarà il metodo per disambiguare una stringa utilizzando i grafi di wordnet
+	 * 
+	 * 
+	 * Probabilmente dovrà ritornare (o delegare ad un altro metodo) la classifica dei grafi secondo il punteggio
+	 * 
+	 * ***********DA IMPLEMENTARE************
+	 */
 	public void disambiguation()
 	{
 		return;
 	}
 
+	/**
+	 * Crea grafi ricorsivamente utilizzando il file wordnetList.txt
+	 * 
+	 * Probabilmente dovrà ritornare l'hashset di grafi.
+	 * Inoltre sarebbe meglio salvare il tutto su un file in quanto i grafi saranno sempre uguali 
+	 * per questo non dovrebbe servire ricostruire tutto l'hash set ogni volta
+	 * 
+	 * ***********DA IMPLEMENTARE************
+	 */
 	public void initGraph()
 	{
 //		this.build.takeTheWordnetBabelnetGraphs();
@@ -75,14 +96,13 @@ public class Controller
 //		for(int i = 0; i < 10; i ++)
 //			System.out.println(s.get(i));
 		
-		String toFind = IO.getToFind();
-		List<String> lemmList = this.lemm.lemmatize(toFind);
-		Set<String> set = this.lemm.toSet(lemmList);
+//		String toFind = IO.getToFind();
+//		List<String> lemmList = this.lemm.lemmatize(toFind);
+//		Set<String> set = this.lemm.toSet(lemmList);
 		
-		Graph<String,DefaultEdge> grafo = new SimpleGraph<>(DefaultEdge.class);
-		
-		System.out.println(lemmList);
-		System.out.println(set);
+		Map<BabelSynsetID, Graph<Node, DefaultEdge>> mapOfWordnetSynset = this.build.getWordnetBabelnetGraphs();
+		if(mapOfWordnetSynset == null) System.out.println("null");
+		else System.out.println(mapOfWordnetSynset.size()); 
 	}
 
 }

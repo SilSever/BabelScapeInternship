@@ -114,6 +114,29 @@ public class Finder
 		}
 		return edgeSynsetIDs;
 	}
+	
+	/**
+	 * 
+	 * @param synsetID
+	 * @return the wordnet babelSynsetID outgoingEdges list of a single synsetID
+	 */
+	public List<BabelSynsetID> getWordnetEdge (BabelSynsetID synsetID)
+	{
+		if(synsetID == null) return null;
+
+		List<BabelSynsetID> edgeSynsetIDs = new LinkedList<>();
+		List<BabelSynsetRelation> synsetRelation = synsetID.getOutgoingEdges();
+		if(synsetRelation != null)
+		{
+			synsetRelation.forEach(syn -> 
+			{
+				if(syn != null && syn.getBabelSynsetIDTarget().getSource().equals(BabelSenseSource.WN)) 
+					edgeSynsetIDs.add(syn.getBabelSynsetIDTarget());	
+			});
+		}
+		return edgeSynsetIDs;
+	}
+	 
 
 	public List<String> getStringEdge (String synsetID)
 	{
@@ -176,10 +199,49 @@ public class Finder
 		} 
 		else
 		{
+			System.out.println("Sono entrato qui");
 			final List<BabelSynsetID> wordnetSyn2 = new LinkedList<>();
 			List<String> wordnetSynID = fileH.readList();
+			System.out.println("Ritornata la lista di stringhe");
 			wordnetSynID.parallelStream().forEach(elem -> wordnetSyn2.add(this.findByID(elem)));
 			return wordnetSyn2;
+		}
+	}
+	
+	public List<String> getAllWordnetSynsetProva()
+	{
+		FileHandler fileH = new FileHandler();
+		
+		if(fileH.checkFileOfListIsEmpty())
+		{
+			final List<BabelSynsetID> wordnetSyn = new LinkedList<>();
+			final List<String> wordnetSynString = new LinkedList<>();
+			IntStream.range(1, WORDNET_SYNSETS).forEach( i ->
+			{
+				StringBuilder builder = new StringBuilder();
+				builder.append("bn:");
+				builder.append(String.format("%08d", i));
+				builder.append("n");
+
+				BabelSynset syn = this.bn.getSynset(new BabelSynsetID(builder.toString()));
+				if(syn != null && !syn.getSenses(BabelSenseSource.WN).isEmpty())
+				{
+					wordnetSyn.add(syn.getID());
+					wordnetSynString.add(builder.toString());
+				}
+			});
+			System.out.println("Sono in finder: "+wordnetSyn.size());
+			fileH.writeList(wordnetSyn);
+			return wordnetSynString;
+		} 
+		else
+		{
+			System.out.println("Sono entrato qui");
+			final List<BabelSynsetID> wordnetSyn2 = new LinkedList<>();
+			List<String> wordnetSynID = fileH.readList();
+			System.out.println("Ritornata la lista di stringhe");
+			//wordnetSynID.parallelStream().forEach(elem -> wordnetSyn2.add(this.findByID(elem)));
+			return wordnetSynID;
 		}
 	}
 

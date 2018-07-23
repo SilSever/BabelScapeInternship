@@ -2,17 +2,18 @@ package it.uniroma3.internship.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
+import org.jgrapht.traverse.DepthFirstIterator;
 
 import it.uniroma1.lcl.babelnet.BabelSynsetID;
 import it.uniroma3.internship.domain.BabelScore;
 import it.uniroma3.internship.domain.BabelScoreTry;
+import it.uniroma3.internship.domain.Node;
 
 /**
  * 
@@ -30,6 +31,12 @@ public class Builder
 		this.graph = GraphScore.getInstance();
 	}
 
+	
+	/**
+	 * Un vecchio metodo che costruiva una mappa (rappresentante un grafo) partendo da un nodo
+	 * @param rootConcept
+	 * @return
+	 */
 	public Map<BabelSynsetID, BabelScore> buildMap(String rootConcept)
 	{
 		Map<BabelSynsetID, BabelScore> ID2Score = new HashMap<>();
@@ -58,6 +65,11 @@ public class Builder
 		return ID2Score;
 	}	
 
+	/**
+	 * Metodo identico a quello di sopra ma con svolgimento ricorsivo
+	 * @param rootConcept
+	 * @return
+	 */
 	public Map<BabelSynsetID, BabelScore> buildRecursiveMap(String rootConcept)
 	{
 		Map<BabelSynsetID, BabelScore> ID2Score = new HashMap<>();
@@ -87,6 +99,13 @@ public class Builder
 		//		deep = 0;
 	}
 
+	
+	/**
+	 * Crea un grafo in maniera ricorsiva partendo da un nodo root
+	 * 
+	 * Sarà il metodo da utilizzare per initGraph
+	 * @param rootConcept
+	 */
 	public void buildRecursiveGraph(String rootConcept)
 	{
 		BabelSynsetID root = this.finder.findByID(rootConcept);
@@ -110,14 +129,104 @@ public class Builder
 		
 	}
 
-	public List<Map<BabelSynsetID, BabelScore>> getWordnetBabelnetGraphs()
+	/**
+	 * 
+	 * @return Per adesso ritorna una lista contenente tutti i synsets di wordnet. 
+	 * Idealmente è nata per cercare tutti i nodi di wordnet e costruire i rispettivi grafi
+	 */
+	public Map<BabelSynsetID, Graph<Node, DefaultEdge>> getWordnetBabelnetGraphs()
 	{
-		List<Map<BabelSynsetID, BabelScore>> ID2ScoreList = new LinkedList<>();
-		List<BabelSynsetID> wordnetSyns = this.finder.getAllWordnetSynset();
-		System.out.println("Sono in builder: "+ wordnetSyns.size());
-		//wordnetSyns.forEach(syn -> ID2ScoreList.add(this.buildRecursiveMap(syn.toString())));
+		List<String> wordnetSyns = this.finder.getAllWordnetSynsetProva();
+		System.out.println("Synset da file caricati");
+		return buildMapOfWordnetGraph(wordnetSyns, new HashMap<>(), 0);
+	}
 
-		return ID2ScoreList;
+
+	private Map<BabelSynsetID, Graph<Node, DefaultEdge>> buildMapOfWordnetGraph(
+			List<String> wordnetSyns, Map<BabelSynsetID, Graph<Node, DefaultEdge>> mapOfWordnetSynsets, int i)
+	{
+		if(wordnetSyns == null) return null;
+		if(i == wordnetSyns.size()) return mapOfWordnetSynsets;
+		
+		try {
+		BabelSynsetID syn = this.finder.findByID(wordnetSyns.get(i));
+		if(!mapOfWordnetSynsets.containsKey(syn))
+		{
+			Node currentNode = new Node(syn);
+			Graph<Node, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+			graph.addVertex(currentNode);
+			
+			mapOfWordnetSynsets.put(syn, graph);
+			
+			//runOnSons(this.finder.getWordnetEdge(syn),mapOfWordnetSynsets, currentNode, 0, 1);
+			runOnSonsFirstLevel(this.finder.getWordnetEdge(syn), mapOfWordnetSynsets, currentNode, 0);//Una delle due
+			
+			DepthFirstIterator<Node, DefaultEdge> dfi = new DepthFirstIterator<>(graph); //Probabilmente da modificare
+			dfi.next().changeVisited();
+		}
+		else
+		{
+			DepthFirstIterator<Node, DefaultEdge> dfi = new DepthFirstIterator<>(mapOfWordnetSynsets.get(syn));
+			Node currentNode = dfi.next();
+			
+			if(!currentNode.isVisited())
+			{
+				//runOnSons(this.finder.getWordnetEdge(syn),mapOfWordnetSynsets, currentNode, 0, 1);
+				runOnSonsFirstLevel(this.finder.getWordnetEdge(syn), mapOfWordnetSynsets, currentNode, 0);//Una delle due
+				currentNode.changeVisited();
+			}
+		}
+		return buildMapOfWordnetGraph(wordnetSyns, mapOfWordnetSynsets, i+1);
+		}
+		catch(StackOverflowError e)
+		{
+			System.out.println(mapOfWordnetSynsets.size());
+			return null;
+		}
+	}
+
+
+	private void runOnSons(List<BabelSynsetID> edge, Map<BabelSynsetID, Graph<Node, DefaultEdge>> mapOfWordnetSynsets, Node root, int i, int depth)
+	{
+		if(edge == null || i == edge.size()) return;
+		
+		BabelSynsetID syn = edge.get(i);
+		if(!mapOfWordnetSynsets.containsKey(syn))
+		{
+			Node currentNode = new Node(syn);
+			Graph<Node, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+			graph.addVertex(currentNode);
+			
+			mapOfWordnetSynsets.put(syn, graph);
+			mapOfWordnetSynsets.get(root.getId()).addEdge(root, currentNode);
+			
+			if(depth < 2)
+				runOnSons(this.finder.getWordnetEdge(syn), mapOfWordnetSynsets, currentNode, 0, depth+1);
+			
+			runOnSons(edge, mapOfWordnetSynsets, root, i+1, depth);
+		}
+	}
+	
+	private void runOnSonsFirstLevel(List<BabelSynsetID> edge, Map<BabelSynsetID, Graph<Node, DefaultEdge>> mapOfWordnetSynsets, Node root, int i)
+	{
+		if(edge == null || i == edge.size()) return;
+		
+		BabelSynsetID syn = edge.get(i);
+		if(!mapOfWordnetSynsets.containsKey(syn))
+		{
+			Node currentNode = new Node(syn);
+			Graph<Node, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+			graph.addVertex(currentNode);
+			
+			mapOfWordnetSynsets.put(syn, graph);
+			mapOfWordnetSynsets.get(root.getId()).addEdge(root, currentNode);
+		}
+		else
+		{
+			DepthFirstIterator<Node, DefaultEdge> dfi = new DepthFirstIterator<>(mapOfWordnetSynsets.get(syn));
+			mapOfWordnetSynsets.get(root.getId()).addEdge(root, dfi.next());
+		}
+		runOnSonsFirstLevel(edge, mapOfWordnetSynsets, root, i+1);
 	}
 
 }
