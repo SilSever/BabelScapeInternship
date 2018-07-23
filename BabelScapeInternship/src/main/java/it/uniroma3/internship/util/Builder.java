@@ -137,7 +137,7 @@ public class Builder
 	public Map<BabelSynsetID, Graph<Node, DefaultEdge>> getWordnetBabelnetGraphs()
 	{
 		List<String> wordnetSyns = this.finder.getAllWordnetSynsetProva();
-		System.out.println("Synset da file caricati");
+		System.out.println("Synset da file caricati e sto per iniziare la ricorsione");
 		return buildMapOfWordnetGraph(wordnetSyns, new HashMap<>(), 0);
 	}
 
