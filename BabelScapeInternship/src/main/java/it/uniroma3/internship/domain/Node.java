@@ -14,7 +14,7 @@ public class Node
 		this.visited = false;
 		this.depth = 0;
 	}
-
+	
 	public BabelSynsetID getId()
 	{
 		return id;

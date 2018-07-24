@@ -181,6 +181,7 @@ public class Builder
 		catch(StackOverflowError e)
 		{
 			System.out.println(mapOfWordnetSynsets.size());
+			e.printStackTrace();
 			return null;
 		}
 	}
