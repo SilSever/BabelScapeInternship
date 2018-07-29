@@ -13,6 +13,7 @@ import it.uniroma1.lcl.babelnet.BabelNetQuery;
 import it.uniroma1.lcl.babelnet.BabelSynset;
 import it.uniroma1.lcl.babelnet.BabelSynsetID;
 import it.uniroma1.lcl.babelnet.BabelSynsetRelation;
+import it.uniroma1.lcl.babelnet.data.BabelPointer;
 import it.uniroma1.lcl.babelnet.data.BabelSenseSource;
 import it.uniroma1.lcl.jlt.util.Language;
 import it.uniroma3.internship.ui.FileHandler;
@@ -95,6 +96,12 @@ public class Finder
 
 	/**
 	 * 
+	 * 
+	 *  Lexical pointers represent
+	 *  relations between word forms, and pertain only to specific words in the source and target synsets.
+	 *  We only need semantic pointers of type hypernym, hyponym, meronym and holonym. The rest will just
+	 *  be ignored
+	 * 
 	 * @param synsetID
 	 * @return the babelSynsetID outgoingEdges list of a single synsetID
 	 */
@@ -103,12 +110,17 @@ public class Finder
 		if(synsetID == null) return null;
 
 		List<BabelSynsetID> edgeSynsetIDs = new LinkedList<>();
-		List<BabelSynsetRelation> synsetRelation = synsetID.getOutgoingEdges();
+		List<BabelSynsetRelation> synsetRelation = synsetID.toSynset()
+								.getOutgoingEdges(BabelPointer.ANY_HOLONYM, 
+												 BabelPointer.ANY_HYPERNYM,
+												 BabelPointer.ANY_HYPONYM,
+												 BabelPointer.ANY_MERONYM);
 		if(synsetRelation != null)
 		{
 			synsetRelation.forEach(syn -> 
 			{
-				if(syn != null) 
+				if(syn != null)
+					if(syn.getBabelSynsetIDTarget().getSource().equals(BabelSenseSource.BABELNET)) 
 					edgeSynsetIDs.add(syn.getBabelSynsetIDTarget());	
 			});
 		}
@@ -168,79 +180,47 @@ public class Finder
 	}
 	
 	/**
-	 * Initially it checks if already a file exists with a wordnet synsets.
+	 * Firstly it checks if already a file exists with a wordnet synsets.
 	 * If true, it builds a list from that file, else it builds it scanning Babelnet network
 	 * 
 	 * @return a List of a wordnet synsets in Babelnet
 	 */
-	public List<BabelSynsetID> getAllWordnetSynset()
+	public List<String> getAllWordnetSynset()
 	{
 		FileHandler fileH = new FileHandler();
 		
 		if(fileH.checkFileOfListIsEmpty())
 		{
-			final List<BabelSynsetID> wordnetSyn = new LinkedList<>();
-			IntStream.range(1, WORDNET_SYNSETS).forEach( i ->
-			{
-				StringBuilder builder = new StringBuilder();
-				builder.append("bn:");
-				builder.append(String.format("%08d", i));
-				builder.append("n");
-
-				BabelSynset syn = this.bn.getSynset(new BabelSynsetID(builder.toString()));
-				if(syn != null && !syn.getSenses(BabelSenseSource.WN).isEmpty())
-				{
-					wordnetSyn.add(syn.getID());
-				}
-			});
-			System.out.println("Sono in finder: "+wordnetSyn.size());
-			fileH.writeList(wordnetSyn);
-			return wordnetSyn;
-		} 
-		else
-		{
-			System.out.println("Sono entrato qui");
-			final List<BabelSynsetID> wordnetSyn2 = new LinkedList<>();
-			List<String> wordnetSynID = fileH.readList();
-			System.out.println("Ritornata la lista di stringhe");
-			wordnetSynID.parallelStream().forEach(elem -> wordnetSyn2.add(this.findByID(elem)));
-			return wordnetSyn2;
-		}
-	}
-	
-	public List<String> getAllWordnetSynsetProva()
-	{
-		FileHandler fileH = new FileHandler();
-		
-		if(fileH.checkFileOfListIsEmpty())
-		{
-			final List<BabelSynsetID> wordnetSyn = new LinkedList<>();
+			System.out.println("The file is empty. I'm scanning BabelNet.\nThis operation can be during many minutes...");
 			final List<String> wordnetSynString = new LinkedList<>();
 			IntStream.range(1, WORDNET_SYNSETS).forEach( i ->
 			{
 				StringBuilder builder = new StringBuilder();
 				builder.append("bn:");
 				builder.append(String.format("%08d", i));
-				builder.append("n");
-
-				BabelSynset syn = this.bn.getSynset(new BabelSynsetID(builder.toString()));
-				if(syn != null && !syn.getSenses(BabelSenseSource.WN).isEmpty())
+				builder.append("n"); //Try to find a noun
+				BabelSynsetID syn = this.findByID(builder.toString());
+				if(syn == null)
 				{
-					wordnetSyn.add(syn.getID());
-					wordnetSynString.add(builder.toString());
+					builder.replace(builder.length()-1, builder.length(), "v"); //Else try to find a verb
+					syn = this.findByID(builder.toString());
+					if(syn == null)
+					{
+						builder.replace(builder.length()-1, builder.length(), "a"); //Else try to find an adjective
+						syn = this.findByID(builder.toString());
+					}
 				}
+				if(syn != null && !syn.toSynset().getSenses(BabelSenseSource.WN).isEmpty())
+					wordnetSynString.add(syn.toString());
 			});
-			System.out.println("Sono in finder: "+wordnetSyn.size());
-			fileH.writeList(wordnetSyn);
+			System.out.println("Sono in finder: "+wordnetSynString.size());
+			fileH.writeList(wordnetSynString);
 			return wordnetSynString;
 		} 
 		else
 		{
-			System.out.println("Sono entrato qui");
-			final List<BabelSynsetID> wordnetSyn2 = new LinkedList<>();
+			System.out.println("I'm loading the file...");
 			List<String> wordnetSynID = fileH.readList();
-			System.out.println("Ritornata la lista di stringhe");
-			//wordnetSynID.parallelStream().forEach(elem -> wordnetSyn2.add(this.findByID(elem)));
 			return wordnetSynID;
 		}
 	}

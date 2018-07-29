@@ -3,15 +3,9 @@ package it.uniroma3.internship.util;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
 
 import it.uniroma1.lcl.babelnet.BabelSynsetID;
 import it.uniroma3.internship.domain.BabelScore;
-import it.uniroma3.internship.domain.Node;
 import it.uniroma3.internship.ui.IO;
 
 /**
@@ -89,20 +83,7 @@ public class Controller
 	 */
 	public void initGraph()
 	{
-//		this.build.takeTheWordnetBabelnetGraphs();
-//		FileHandler ha = new FileHandler();
-//		List<String> s = ha.readList();
-//		
-//		for(int i = 0; i < 10; i ++)
-//			System.out.println(s.get(i));
-		
-//		String toFind = IO.getToFind();
-//		List<String> lemmList = this.lemm.lemmatize(toFind);
-//		Set<String> set = this.lemm.toSet(lemmList);
-		
-		Map<BabelSynsetID, Graph<Node, DefaultEdge>> mapOfWordnetSynset = this.build.getWordnetBabelnetGraphs();
-		if(mapOfWordnetSynset == null) System.out.println("null");
-		else System.out.println(mapOfWordnetSynset.size()); 
+		System.out.println(this.build.getWordnetBabelnetGraphs().size());
 	}
 
 }
