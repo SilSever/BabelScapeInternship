@@ -120,7 +120,6 @@ public class Finder
 			synsetRelation.forEach(syn -> 
 			{
 				if(syn != null)
-					if(syn.getBabelSynsetIDTarget().getSource().equals(BabelSenseSource.BABELNET)) 
 					edgeSynsetIDs.add(syn.getBabelSynsetIDTarget());	
 			});
 		}
@@ -137,12 +136,17 @@ public class Finder
 		if(synsetID == null) return null;
 
 		List<BabelSynsetID> edgeSynsetIDs = new LinkedList<>();
-		List<BabelSynsetRelation> synsetRelation = synsetID.getOutgoingEdges();
+		List<BabelSynsetRelation> synsetRelation = synsetID.toSynset()
+								.getOutgoingEdges(BabelPointer.ANY_HOLONYM, 
+												 BabelPointer.ANY_HYPERNYM,
+												 BabelPointer.ANY_HYPONYM,
+												 BabelPointer.ANY_MERONYM);		
 		if(synsetRelation != null)
 		{
-			synsetRelation.forEach(syn -> 
+			List<String> wnSyns = this.getAllWordnetSynset();
+			synsetRelation.stream().forEach(syn -> 
 			{
-				if(syn != null && syn.getBabelSynsetIDTarget().getSource().equals(BabelSenseSource.WN)) 
+				if(syn != null && wnSyns.contains(syn.getBabelSynsetIDTarget().toString())) 
 					edgeSynsetIDs.add(syn.getBabelSynsetIDTarget());	
 			});
 		}
@@ -176,7 +180,7 @@ public class Finder
 	public BabelSynsetID findByID(String toFind)
 	{
 		BabelSynset bs = this.bn.getSynset(new BabelSynsetID(toFind));
-		return bs == null ? null : bs.getID();
+		return bs.getID();
 	}
 	
 	/**
@@ -189,9 +193,8 @@ public class Finder
 	{
 		FileHandler fileH = new FileHandler();
 		
-		if(fileH.checkFileOfListIsEmpty())
+		if(fileH.checkListFileIsEmpty())
 		{
-			System.out.println("The file is empty. I'm scanning BabelNet.\nThis operation can be during many minutes...");
 			final List<String> wordnetSynString = new LinkedList<>();
 			IntStream.range(1, WORDNET_SYNSETS).forEach( i ->
 			{
@@ -213,13 +216,11 @@ public class Finder
 				if(syn != null && !syn.toSynset().getSenses(BabelSenseSource.WN).isEmpty())
 					wordnetSynString.add(syn.toString());
 			});
-			System.out.println("Sono in finder: "+wordnetSynString.size());
 			fileH.writeList(wordnetSynString);
 			return wordnetSynString;
 		} 
 		else
 		{
-			System.out.println("I'm loading the file...");
 			List<String> wordnetSynID = fileH.readList();
 			return wordnetSynID;
 		}

@@ -4,13 +4,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
+
 import it.uniroma1.lcl.babelnet.BabelSynsetID;
 import it.uniroma3.internship.domain.BabelScore;
+import it.uniroma3.internship.ui.FileHandler;
+import it.uniroma3.internship.ui.GraphViewer;
 import it.uniroma3.internship.ui.IO;
 
 /**
  * 
- * @author silvio
+ * @author Silvio Severino
  *
  */
 public class Controller
@@ -73,17 +78,15 @@ public class Controller
 	}
 
 	/**
-	 * Crea grafi ricorsivamente utilizzando il file wordnetList.txt
 	 * 
-	 * Probabilmente dovrà ritornare l'hashset di grafi.
-	 * Inoltre sarebbe meglio salvare il tutto su un file in quanto i grafi saranno sempre uguali 
-	 * per questo non dovrebbe servire ricostruire tutto l'hash set ogni volta
-	 * 
-	 * ***********DA IMPLEMENTARE************
 	 */
 	public void initGraph()
 	{
-		System.out.println(this.build.getWordnetBabelnetGraphs().size());
+		FileHandler fh = new FileHandler();
+		
+		Graph<String, DefaultEdge> graph = fh.readGraph();
+		
+		System.out.println(graph.vertexSet().size());
 	}
 
 }

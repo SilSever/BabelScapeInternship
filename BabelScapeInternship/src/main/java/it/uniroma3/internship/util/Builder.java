@@ -1,22 +1,17 @@
 package it.uniroma3.internship.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
-import it.uniroma1.lcl.babelnet.BabelSynset;
 import it.uniroma1.lcl.babelnet.BabelSynsetID;
-import it.uniroma1.lcl.babelnet.BabelSynsetRelation;
-import it.uniroma1.lcl.babelnet.data.BabelPointer;
 import it.uniroma3.internship.domain.BabelScore;
+import it.uniroma3.internship.ui.FileHandler;
 
 /**
  * This class it's used for build the map of graphs relative at the wordnet nodes in BabelNet
@@ -27,8 +22,8 @@ import it.uniroma3.internship.domain.BabelScore;
 public class Builder
 {
 	private Finder finder;
-	private Graph<BabelSynsetID, DefaultEdge> graph;
-	private Map<BabelSynsetID, Graph<BabelSynsetID, DefaultEdge>> mapOfWordnetSynsets;
+	private Graph<String, DefaultEdge> graph;
+	private Map<BabelSynsetID, Graph<String, DefaultEdge>> mapOfWordnetSynsets;
 
 	/**
 	 * Constructor
@@ -105,10 +100,8 @@ public class Builder
 
 	/**
 	 * 
-	 * @return Per adesso ritorna una lista contenente tutti i synsets di wordnet. 
-	 * Idealmente è nata per cercare tutti i nodi di wordnet e costruire i rispettivi grafi
 	 */
-	public Map<BabelSynsetID, Graph<BabelSynsetID, DefaultEdge>> getWordnetBabelnetGraphs()
+	public Map<BabelSynsetID, Graph<String, DefaultEdge>> getWordnetBabelnetGraphs()
 	{
 		List<String> wordnetSyns = this.finder.getAllWordnetSynset();
 		System.out.println(wordnetSyns.size());
@@ -128,84 +121,43 @@ public class Builder
 		return this.mapOfWordnetSynsets;
 	}
 
+	public Graph<String, DefaultEdge> buildWordnetGraph()
+	{
+		FileHandler fileH = new FileHandler();
+		
+		if(fileH.checkGraphFileIsEmpty())
+		{
+			this.finder.getAllWordnetSynset().stream().forEach(elem -> recursiveWordnetGraph(this.finder.findByID(elem), 0));
+			fileH.writeGraph(this.graph);
+		}
+		else
+			this.graph = fileH.readGraph();
+		
+		return this.graph;
+	}
 
 	/*
-	 * Mi sono reso conto che i nodi di wordnet contenuti nella lista WordnetList.txt non hanno figli di wordnet.
-	 * Per questo motivo devo modificare l'algoritmo andandomi a creare una mappa contenente tutti i nodi di wordnet
-	 * e avente come valore un grafo che abbia tutti i nodi a distanza due dal nodo di wordnet. 
-	 * 
-	 * Posso modificare buildMapOfWordnetGraph, sfruttandolo solamente per aggiungere i nuovi nodi alla mappa e richiamare
-	 * buildRecursiveGraph per creare il grafo.
 	 * 
 	 */
 	private void recursiveWordnetGraph(BabelSynsetID oldNode, int deep)
 	{
-		if(!this.graph.containsVertex(oldNode))
-			this.graph.addVertex(oldNode);
+		if(!this.graph.containsVertex(oldNode.toString()))
+			this.graph.addVertex(oldNode.toString());
 
-		List<BabelSynsetID> syns = this.finder.getEdge(oldNode);
-		
-		for(int i = 0; i < syns.size(); i++)
-			syns.forEach(child -> 
-			{
-				if(child != null)
-				{
-					if(!this.graph.containsVertex(child))
-						this.graph.addVertex(child);
+		List<BabelSynsetID> syns = this.finder.getWordnetEdge(oldNode);
+		//		System.out.println("\t\t" + syns.size());
 
-					if(!child.equals(oldNode))
-						this.graph.addEdge(oldNode, child);
+		for(BabelSynsetID child : syns)
+		{			
+			if(!this.graph.containsVertex(child.toString()))
+				this.graph.addVertex(child.toString());
 
-					if(deep < 1)
-						recursiveWordnetGraph(child, deep+1);
-				}
-			});
-	}
+			if(!child.equals(oldNode))
+				this.graph.addEdge(oldNode.toString(), child.toString());
 
-	public void prova()
-	{
-		BabelSynset syn = this.finder.getBabelnet().getSynset(new BabelSynsetID("bn:00000002n"));
-		try
-		{
-			Map<String, Integer> map = this.walk(syn);
-			System.out.println("Ha finito walk");
-			map.keySet().stream().forEach(elem ->
-			{
-				System.out.println(elem + "--->" + map.get(elem));
-			});
-		} catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(deep < 1)
+				recursiveWordnetGraph(child, deep+1);
 		}
-
-	}
-
-	private Map<String, Integer> walk(BabelSynset source) throws IOException {
-		int depth = 2;
-		final Map<String, Integer> neighbours = new HashMap<>();
-		neighbours.put(source.getID().toString(), 0);
-
-		final Queue<BabelSynset> queue = new LinkedList<>();
-		queue.add(source);
-
-		while (!queue.isEmpty()) {
-			final BabelSynset synset = queue.remove();
-			final List<BabelSynsetRelation> edges = synset.getOutgoingEdges(BabelPointer.GLOSS_DISAMBIGUATED);
-			for (final BabelSynsetRelation edge : edges) {
-				int step = neighbours.get(synset.getID().toString());
-				if (!neighbours.containsKey(edge.getTarget()) && Math.abs(step) < depth) {
-					int level = (step == 0) ?
-							(edge.getPointer().isHypernym() ? +1 : -1) :
-								Integer.signum(step) * (Math.abs(step) + 1);
-							neighbours.put(edge.getTarget(), level);
-							queue.add(edge.getBabelSynsetIDTarget().toSynset());
-				}
-			}
-		}
-
-		//        neighbours.remove(source.getID().toString());
-		return neighbours;
 	}
 
 }
