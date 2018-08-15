@@ -16,7 +16,7 @@ import it.uniroma1.lcl.babelnet.BabelSynsetRelation;
 import it.uniroma1.lcl.babelnet.data.BabelPointer;
 import it.uniroma1.lcl.babelnet.data.BabelSenseSource;
 import it.uniroma1.lcl.jlt.util.Language;
-import it.uniroma3.internship.ui.FileHandler;
+import it.uniroma3.internship.io.handler.WordnetNodeHandler;
 
 /**
  * 
@@ -111,10 +111,10 @@ public class Finder
 
 		List<BabelSynsetID> edgeSynsetIDs = new LinkedList<>();
 		List<BabelSynsetRelation> synsetRelation = synsetID.toSynset()
-								.getOutgoingEdges(BabelPointer.ANY_HOLONYM, 
-												 BabelPointer.ANY_HYPERNYM,
-												 BabelPointer.ANY_HYPONYM,
-												 BabelPointer.ANY_MERONYM);
+				.getOutgoingEdges(BabelPointer.ANY_HOLONYM, 
+						BabelPointer.ANY_HYPERNYM,
+						BabelPointer.ANY_HYPONYM,
+						BabelPointer.ANY_MERONYM);
 		if(synsetRelation != null)
 		{
 			synsetRelation.forEach(syn -> 
@@ -125,34 +125,37 @@ public class Finder
 		}
 		return edgeSynsetIDs;
 	}
-	
+
 	/**
 	 * 
 	 * @param synsetID
 	 * @return the wordnet babelSynsetID outgoingEdges list of a single synsetID
+	 * 
 	 */
 	public List<BabelSynsetID> getWordnetEdge (BabelSynsetID synsetID)
 	{
 		if(synsetID == null) return null;
 
 		List<BabelSynsetID> edgeSynsetIDs = new LinkedList<>();
-		List<BabelSynsetRelation> synsetRelation = synsetID.toSynset()
-								.getOutgoingEdges(BabelPointer.ANY_HOLONYM, 
-												 BabelPointer.ANY_HYPERNYM,
-												 BabelPointer.ANY_HYPONYM,
-												 BabelPointer.ANY_MERONYM);		
+		List<BabelSynsetRelation> synsetRelation = synsetID.toSynset().getOutgoingEdges();
 		if(synsetRelation != null)
 		{
 			List<String> wnSyns = this.getAllWordnetSynset();
 			synsetRelation.stream().forEach(syn -> 
 			{
-				if(syn != null && wnSyns.contains(syn.getBabelSynsetIDTarget().toString())) 
-					edgeSynsetIDs.add(syn.getBabelSynsetIDTarget());	
+				if(syn != null)
+				{
+					if( !syn.getPointer().equals(BabelPointer.REGION) || !syn.getPointer().equals(BabelPointer.REGION_MEMBER)
+							|| !syn.getPointer().equals(BabelPointer.TOPIC) || !syn.getPointer().equals(BabelPointer.TOPIC_MEMBER)
+							|| !syn.getPointer().equals(BabelPointer.USAGE) || !syn.getPointer().equals(BabelPointer.USAGE_MEMBER))
+						if(wnSyns.contains(syn.getBabelSynsetIDTarget().toString())) 
+							edgeSynsetIDs.add(syn.getBabelSynsetIDTarget());	
+				}
 			});
 		}
 		return edgeSynsetIDs;
 	}
-	 
+
 
 	public List<String> getStringEdge (String synsetID)
 	{
@@ -182,7 +185,7 @@ public class Finder
 		BabelSynset bs = this.bn.getSynset(new BabelSynsetID(toFind));
 		return bs.getID();
 	}
-	
+
 	/**
 	 * Firstly it checks if already a file exists with a wordnet synsets.
 	 * If true, it builds a list from that file, else it builds it scanning Babelnet network
@@ -191,9 +194,9 @@ public class Finder
 	 */
 	public List<String> getAllWordnetSynset()
 	{
-		FileHandler fileH = new FileHandler();
-		
-		if(fileH.checkListFileIsEmpty())
+		WordnetNodeHandler fileH = new WordnetNodeHandler();
+
+		if(fileH.checkIfEmpty())
 		{
 			final List<String> wordnetSynString = new LinkedList<>();
 			IntStream.range(1, WORDNET_SYNSETS).forEach( i ->
@@ -216,12 +219,12 @@ public class Finder
 				if(syn != null && !syn.toSynset().getSenses(BabelSenseSource.WN).isEmpty())
 					wordnetSynString.add(syn.toString());
 			});
-			fileH.writeList(wordnetSynString);
+			fileH.write(wordnetSynString);
 			return wordnetSynString;
 		} 
 		else
 		{
-			List<String> wordnetSynID = fileH.readList();
+			List<String> wordnetSynID = fileH.read();
 			return wordnetSynID;
 		}
 	}

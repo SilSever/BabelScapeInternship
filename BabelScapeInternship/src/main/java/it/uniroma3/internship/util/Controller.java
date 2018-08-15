@@ -9,9 +9,9 @@ import org.jgrapht.graph.DefaultEdge;
 
 import it.uniroma1.lcl.babelnet.BabelSynsetID;
 import it.uniroma3.internship.domain.BabelScore;
-import it.uniroma3.internship.ui.FileHandler;
-import it.uniroma3.internship.ui.GraphViewer;
-import it.uniroma3.internship.ui.IO;
+import it.uniroma3.internship.io.IO;
+import it.uniroma3.internship.io.handler.GraphHandler;
+import it.uniroma3.internship.util.builder.GraphBuilder;
 
 /**
  * 
@@ -22,7 +22,7 @@ public class Controller
 {
 	private Lemmatizer lemm;
 	private Finder finder;
-	private Builder build;
+	private GraphBuilder build;
 	
 	private List<Map<BabelSynsetID, BabelScore>> graphMapList;
 	private List<BabelSynsetID> synIDs;
@@ -32,7 +32,7 @@ public class Controller
 	{
 		this.lemm = new Lemmatizer();
 		this.finder = new Finder();
-		this.build = new Builder();
+		this.build = new GraphBuilder();
 		
 		this.graphMapList = new LinkedList<>();
 		this.synIDs = new LinkedList<>();
@@ -82,9 +82,7 @@ public class Controller
 	 */
 	public void initGraph()
 	{
-		FileHandler fh = new FileHandler();
-		
-		Graph<String, DefaultEdge> graph = fh.readGraph();
+		Graph<String, DefaultEdge> graph = this.build.buildWordnetGraph();
 		
 		System.out.println(graph.vertexSet().size());
 	}
