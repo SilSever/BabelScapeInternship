@@ -10,7 +10,6 @@ import org.jgrapht.graph.DefaultEdge;
 import it.uniroma1.lcl.babelnet.BabelSynsetID;
 import it.uniroma3.internship.domain.BabelScore;
 import it.uniroma3.internship.io.IO;
-import it.uniroma3.internship.io.handler.GraphHandler;
 import it.uniroma3.internship.util.builder.GraphBuilder;
 
 /**
@@ -82,9 +81,8 @@ public class Controller
 	 */
 	public void initGraph()
 	{
-		Graph<String, DefaultEdge> graph = this.build.buildWordnetGraph();
-		
-		System.out.println(graph.vertexSet().size());
+		Map<String, Graph<String, DefaultEdge>> graph = this.build.getWordnetBabelnetGraphs();
+		System.out.println(graph.keySet().size());
 	}
 
 }

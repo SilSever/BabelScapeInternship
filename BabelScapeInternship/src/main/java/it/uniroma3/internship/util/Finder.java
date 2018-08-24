@@ -228,7 +228,14 @@ public class Finder
 			return wordnetSynID;
 		}
 	}
-
+	
+	public String getFirstSenseOf(BabelSynsetID synID)
+	{
+		Lemmatizer lemm = new Lemmatizer();
+		String sense = synID.toSynset().getSenses(Language.EN, BabelSenseSource.WN).get(0).getSimpleLemma().toString();
+		return lemm.lemmatize(sense).get(0);
+	}
+	
 	public BabelNet getBabelnet()
 	{
 		return this.bn;

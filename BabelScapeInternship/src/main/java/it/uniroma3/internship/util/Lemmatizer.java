@@ -17,7 +17,7 @@ import edu.stanford.nlp.util.CoreMap;
 
 /**
  * 
- * @author silvio
+ * @author Silvio Severino
  *
  */
 public class Lemmatizer { 

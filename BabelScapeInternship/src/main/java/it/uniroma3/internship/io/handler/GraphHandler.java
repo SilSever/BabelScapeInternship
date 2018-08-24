@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Map;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
@@ -29,7 +30,7 @@ public class GraphHandler implements Handler
 	@Override
 	public void write(Object obj)
 	{
-		Graph<String, DefaultEdge> graph = (Graph<String, DefaultEdge>) obj;
+		Map<String ,Graph<String, DefaultEdge>> graph = (Map<String, Graph<String, DefaultEdge>>) obj;
 		FileOutputStream fos;
 		try
 		{
@@ -51,15 +52,15 @@ public class GraphHandler implements Handler
 	 */
 	@SuppressWarnings({ "unchecked", "resource" })
 	@Override
-	public Graph<String, DefaultEdge> read()
+	public Map<String ,Graph<String, DefaultEdge>> read()
 	{
 		FileInputStream fin;
-		Graph<String,DefaultEdge> graph = null;
+		Map<String ,Graph<String, DefaultEdge>> graph = null;
 		try
 		{
 			fin = new FileInputStream(GRAPH_FILE);
 			ObjectInputStream ois = new ObjectInputStream(fin);
-			graph = (Graph<String, DefaultEdge>) ois.readObject();
+			graph = (Map<String ,Graph<String, DefaultEdge>>) ois.readObject();
 		} catch (IOException | ClassNotFoundException e)
 		{
 			e.printStackTrace();
